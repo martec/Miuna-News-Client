@@ -443,8 +443,8 @@ function MNS_newthread()
 			$mybb->user['avatar'] = "". $settings['bburl'] ."/images/default_avatar.png";
 		}		
 		$name = format_name($mybb->user['username'], $mybb->user['usergroup'], $mybb->user['displaygroup']);
-		$name_link = build_profile_link($name,$mybb->user['uid'], '_blank');
-		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' style='max-height: 40px; max-width: 40px;' />",$mybb->user['uid'], '_blank');
+		$name_link = build_profile_link($name,$mybb->user['uid']);
+		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' style='max-height: 40px; max-width: 40px;' />",$mybb->user['uid']);
 		$link = '[url=' . $settings['bburl'] . '/' . get_thread_link($tid) . ']' . $mybb->input['subject'] . '[/url]';
 		$linklang = $lang->sprintf($lang->miunanews_newthread_lang, $link);
 
@@ -483,8 +483,8 @@ function MNS_newpost()
 			$mybb->user['avatar'] = "". $settings['bburl'] ."/images/default_avatar.png";
 		}
 		$name = format_name($mybb->user['username'], $mybb->user['usergroup'], $mybb->user['displaygroup']);
-		$name_link = build_profile_link($name,$mybb->user['uid'], '_blank');
-		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' style='max-height: 40px; max-width: 40px;' />",$mybb->user['uid'], '_blank');
+		$name_link = build_profile_link($name,$mybb->user['uid']);
+		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' style='max-height: 40px; max-width: 40px;' />",$mybb->user['uid']);
 		$MNS_url = htmlspecialchars_decode($url);
 		$link = '[url=' . $settings['bburl'] . '/' . $MNS_url . ']' . $thread['subject'] . '[/url]';
 		$linklang = $lang->sprintf($lang->miunanews_newpost_lang, $link);

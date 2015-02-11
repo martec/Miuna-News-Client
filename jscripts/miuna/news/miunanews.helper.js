@@ -109,7 +109,7 @@ function regexmiunanews(message) {
 	],
 	// The matching array of strings to replace matches with
 	format_replace = [
-		'<a href="$1" target="_blank">$2</a>'
+		'<a href="$1">$2</a>'
 	];
 	// Perform the actual conversion
 	for (var i =0;i<format_search.length;i++) {
