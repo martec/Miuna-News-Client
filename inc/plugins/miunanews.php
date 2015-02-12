@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '1.0.0');
+define('MNS_PLUGIN_VER', '1.0.2');
 
 function miunanews_info()
 {
@@ -43,7 +43,7 @@ function miunanews_info()
 		"guid"			=> "",
 		"compatibility" => "18*"
 	);
-	
+
 	if(miunanews_is_installed() && $plugins_cache['active']['miunanews'] && myalerts_is_installed() && $plugins_cache['active']['myalerts']) {
 		global $PL;
 		$PL or require_once PLUGINLIBRARY;
@@ -54,11 +54,11 @@ function miunanews_info()
 		$editcode = "index.php?module=config-plugins&amp;miunanews=edit&amp;my_post_key=".$mybb->post_code;
 		$undocode = "index.php?module=config-plugins&amp;miunanews=undo&amp;my_post_key=".$mybb->post_code;
 
-		$info["description"] .= "<br /><a href=\"{$editcode}\">Make edits to inc/plugins/myalerts.php</a>.";
-		$info["description"] .= "	 | <a href=\"{$undocode}\">Undo edits to inc/plugins/myalerts.php</a>.";
+		$info["description"] .= "<br /><a href=\"{$editcode}\">Make edits to inc/plugins/MyAlerts/Alerts.class.php</a>.";
+		$info["description"] .= "	 | <a href=\"{$undocode}\">Undo edits to inc/plugins/MyAlerts/Alerts.class.php</a>.";
 	}
 
-	return $info;	
+	return $info;
 }
 
 function miunanews_install()
@@ -106,7 +106,7 @@ function miunanews_install()
 		'value' => '5',
 		'disporder' => 3,
 		'gid'		=> $groupid
-	);	
+	);
 	$miunanews_setting[] = array(
 		'name' => 'miunanews_grups_acc',
 		'title' => $lang->miunanews_nogrp_title,
@@ -205,7 +205,7 @@ function miunanews_install()
 		'value' => 'orange',
 		'disporder' => 14,
 		'gid'		=> $groupid
-	);	
+	);
 	$miunanews_setting[] = array(
 		'name' => 'miunanews_myalerts',
 		'title' => $lang->miunanews_myalertonoff_title,
@@ -215,7 +215,7 @@ function miunanews_install()
 		'disporder' => 15,
 		'gid'		=> $groupid
 	);
-	
+
 	$db->insert_query_multiple("settings", $miunanews_setting);
 	rebuild_settings();
 
@@ -225,7 +225,7 @@ function miunanews_uninstall()
 {
 	global $db, $PL;
 	$PL or require_once PLUGINLIBRARY;
-	
+
 	if(!file_exists(PLUGINLIBRARY)) {
 		flash_message("PluginLibrary is missing.", "error");
 		admin_redirect("index.php?module=config-plugins");
@@ -273,12 +273,12 @@ function miunanews_activate()
 	global $db, $plugins_cache, $PL;
 	$PL or require_once PLUGINLIBRARY;
 	require MYBB_ROOT.'/inc/adminfunctions_templates.php';
-	
+
 	if(!file_exists(PLUGINLIBRARY)) {
 		flash_message("PluginLibrary is missing.", "error");
 		admin_redirect("index.php?module=config-plugins");
 	}
-	
+
 	$PL->stylesheet('miunanews', file_get_contents(MYBB_ROOT . "/jscripts/miuna/news/css/miunanews.css"));
 
 	$new_template_global['miunanewstemplate'] = "<script src=\"{\$mybb->settings['miunanews_server']}/socket.io/socket.io.js\"></script>
@@ -313,7 +313,7 @@ if (typeof io == 'undefined') {
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/miuna/news/miunanews.helper.js?ver=".MNS_PLUGIN_VER."\"></script>
 <script type=\"text/javascript\">
 \$(document).ready(function() {
-	miunanews({\$mybb->user['uid']})
+	miunanews({\$mybb->user['uid']});
 });
 </script>
 <li><a href=\"{\$mybb->settings['bburl']}/usercp.php?action=miunanews_config\" class=\"miunanews miunanews_popup_hook\" id=\"miunaunreadNews_menu\">{\$lang->miunanews_news}</a></li>
@@ -333,11 +333,53 @@ if (typeof io == 'undefined') {
 	}
 
 	find_replace_templatesets("header_welcomeblock_member", '#{\$modcplink}#', "{\$modcplink}{\$miunanews}");
-	
+
 	if(myalerts_is_installed() && $plugins_cache['active']['myalerts']) {
-		$PL->edit_core("miunanews", "inc/plugins/myalerts.php",
-			array(	'search' => array('global $Alerts, $db, $lang;', "require_once MYALERTS_PLUGIN_PATH.'Alerts.class.php';"),
-					'replace' => array('global $Alerts, $db, $lang;', "require_once MYALERTS_PLUGIN_PATH.'miunanews_Alerts.class.php';"),
+		$result = $PL->edit_core("miunanews", "inc/plugins/MyAlerts/Alerts.class.php", array (
+					array(	'search' => 'json_encode($content);',
+							'before' => 'global $mybb, $settings;',
+							'multi' => true
+					),
+					array(	'search' => array('$this->db->insert_query(\'alerts\', $insertArray);'),
+							'after' => array(	'
+										if($settings[\'miunanews_myalerts\']) {
+											$data = array(
+												"uid" => (int) $uid,
+												"type" => $this->db->escape_string($type)
+											);
+
+											$gettoken = tokencallMN();
+											$token = json_decode(substr($gettoken, 5));
+
+											$msg = \'["myalertsnews",\'.json_encode($data).\']\';
+											$count = strlen($msg) + 2;
+
+											sendPostDataMN($token, \'\'.$count.\':42\'.$msg.\'\');
+										}
+										')
+						),
+					array (	'search' => '$insertArray = array();',
+							'after' => array(	'
+												if($settings[\'miunanews_myalerts\']) {
+													$gettoken = tokencallMN();
+													$token = json_decode(substr($gettoken, 5));
+												}
+												')
+					),
+					array (	'search' => array('\'forced\' => (int) $forced,', ');'),
+							'after' => array(	'
+												if($settings[\'miunanews_myalerts\']) {
+													$data = array(
+														"uid" => (int) $uid,
+														"type" => $this->db->escape_string($type)
+													);
+													$msg = \'["myalertsnews",\'.json_encode($data).\']\';
+													$count = strlen($msg) + 2;
+
+													sendPostDataMN($token, \'\'.$count.\':42\'.$msg.\'\');
+												}
+												')
+					)
 			),
 			true
 		);
@@ -349,19 +391,19 @@ function miunanews_deactivate()
 	global $db, $PL;
 	$PL or require_once PLUGINLIBRARY;
 	require MYBB_ROOT.'/inc/adminfunctions_templates.php';
-	
+
 	if(!file_exists(PLUGINLIBRARY)) {
 		flash_message("PluginLibrary is missing.", "error");
 		admin_redirect("index.php?module=config-plugins");
 	}
-	
+
 	$PL->stylesheet_deactivate('miunanews', true);
 
 	$db->delete_query("templates", "title IN('miunanewstemplate')");
 
 	find_replace_templatesets("header_welcomeblock_member", '#'.preg_quote('{$miunanews}').'#', '',0);
 
-	$PL->edit_core("miunanews", "inc/plugins/myalerts.php", array(), true);
+	$PL->edit_core("miunanews", "inc/plugins/MyAlerts/Alerts.class.php", array(), true);
 }
 
 global $settings;
@@ -400,9 +442,9 @@ function MiunaNews() {
 
 function tokencallMN() {
 	global $mybb, $settings;
-	$baseurl = $settings['miunanews_server'];	
+	$baseurl = $settings['miunanews_server'];
 	$timestamp = TIME_NOW;
-	$url_token = $baseurl."/socket.io/?EIO=3&transport=polling&t=".$timestamp;	
+	$url_token = $baseurl."/socket.io/?EIO=3&transport=polling&t=".$timestamp;
 	$ch = curl_init($url_token);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Origin: http://'.$_SERVER['HTTP_HOST'].''));
@@ -441,7 +483,7 @@ function MNS_newthread()
 
 		if(empty($mybb->user['avatar'])) {
 			$mybb->user['avatar'] = "". $settings['bburl'] ."/images/default_avatar.png";
-		}		
+		}
 		$name = format_name($mybb->user['username'], $mybb->user['usergroup'], $mybb->user['displaygroup']);
 		$name_link = build_profile_link($name,$mybb->user['uid']);
 		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' style='max-height: 40px; max-width: 40px;' />",$mybb->user['uid']);
@@ -478,7 +520,7 @@ function MNS_newpost()
 
 	if(!in_array((int)$forum['fid'],explode(',',$mybb->settings['miunanews_folder_acc']))) {
 		$lang->load('admin/config_miunanews');
-		
+
 		if(empty($mybb->user['avatar'])) {
 			$mybb->user['avatar'] = "". $settings['bburl'] ."/images/default_avatar.png";
 		}
@@ -522,11 +564,52 @@ function miunanews_edit()
 
 	$PL or require_once PLUGINLIBRARY;
 
-	if($mybb->input['miunanews'] == 'edit')
-	{
-		$result = $PL->edit_core("miunanews", "inc/plugins/myalerts.php",
-			array(	'search' => array('global $Alerts, $db, $lang;', "require_once MYALERTS_PLUGIN_PATH.'Alerts.class.php';"),
-					'replace' => array('global $Alerts, $db, $lang;', "require_once MYALERTS_PLUGIN_PATH.'miunanews_Alerts.class.php';"),
+	if($mybb->input['miunanews'] == 'edit') {
+		$result = $PL->edit_core("miunanews", "inc/plugins/MyAlerts/Alerts.class.php", array (
+					array(	'search' => 'json_encode($content);',
+							'before' => 'global $mybb, $settings;',
+							'multi' => true
+					),
+					array(	'search' => array('$this->db->insert_query(\'alerts\', $insertArray);'),
+							'after' => array(	'
+										if($settings[\'miunanews_myalerts\']) {
+											$data = array(
+												"uid" => (int) $uid,
+												"type" => $this->db->escape_string($type)
+											);
+
+											$gettoken = tokencallMN();
+											$token = json_decode(substr($gettoken, 5));
+
+											$msg = \'["myalertsnews",\'.json_encode($data).\']\';
+											$count = strlen($msg) + 2;
+
+											sendPostDataMN($token, \'\'.$count.\':42\'.$msg.\'\');
+										}
+										')
+						),
+					array (	'search' => '$insertArray = array();',
+							'after' => array(	'
+												if($settings[\'miunanews_myalerts\']) {
+													$gettoken = tokencallMN();
+													$token = json_decode(substr($gettoken, 5));
+												}
+												')
+					),
+					array (	'search' => array('\'forced\' => (int) $forced,', ');'),
+							'after' => array(	'
+												if($settings[\'miunanews_myalerts\']) {
+													$data = array(
+														"uid" => (int) $uid,
+														"type" => $this->db->escape_string($type)
+													);
+													$msg = \'["myalertsnews",\'.json_encode($data).\']\';
+													$count = strlen($msg) + 2;
+
+													sendPostDataMN($token, \'\'.$count.\':42\'.$msg.\'\');
+												}
+												')
+					)
 			),
 			true
 		);
@@ -534,7 +617,7 @@ function miunanews_edit()
 
 	else if($mybb->input['miunanews'] == 'undo')
 	{
-		$result = $PL->edit_core("miunanews", "inc/plugins/myalerts.php", array(), true);
+		$result = $PL->edit_core("miunanews", "inc/plugins/MyAlerts/Alerts.class.php", array(), true);
 	}
 
 	else
@@ -544,13 +627,13 @@ function miunanews_edit()
 
 	if($result === true)
 	{
-		flash_message("The file inc/plugins/myalerts.php was modified successfully.", "success");
+		flash_message("The file inc/plugins/MyAlerts/Alerts.class.php was modified successfully.", "success");
 		admin_redirect("index.php?module=config-plugins");
 	}
 
 	else
 	{
-		flash_message("The file inc/plugins/myalerts.php could not be edited. Are the CHMOD settings correct?", "error");
+		flash_message("The file inc/plugins/MyAlerts/Alerts.class.php could not be edited. Are the CHMOD settings correct?", "error");
 		admin_redirect("index.php?module=config-plugins");
 	}
 }
