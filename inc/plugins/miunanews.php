@@ -44,7 +44,7 @@ function miunanews_info()
 		"compatibility" => "18*"
 	);
 
-	if(miunanews_is_installed() && $plugins_cache['active']['miunanews'] && myalerts_is_installed() && $plugins_cache['active']['myalerts']) {
+	if(miunanews_is_installed() && $plugins_cache['active']['miunanews'] && $plugins_cache['active']['myalerts']) {
 		global $PL;
 		$PL or require_once PLUGINLIBRARY;
 
@@ -334,7 +334,7 @@ if (typeof io == 'undefined') {
 
 	find_replace_templatesets("header_welcomeblock_member", '#{\$modcplink}#', "{\$modcplink}{\$miunanews}");
 
-	if(myalerts_is_installed() && $plugins_cache['active']['myalerts']) {
+	if($plugins_cache['active']['myalerts']) {
 		$result = $PL->edit_core("miunanews", "inc/plugins/MyAlerts/Alerts.class.php", array (
 					array(	'search' => 'json_encode($content);',
 							'before' => 'global $mybb, $settings;',
