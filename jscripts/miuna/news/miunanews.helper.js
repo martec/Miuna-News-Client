@@ -99,6 +99,8 @@ function miunanews(mybbuid) {
 			if (newscont < limitnews) {
 				newscont++;
 			}
+			$(".mnewscount").text(newscont).show();
+			document.title = '['+newscont+'] '+mns_orgtit+'';
 		});
 	}
 }
