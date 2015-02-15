@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '1.0.2');
+define('MNS_PLUGIN_VER', '1.0.3');
 
 function miunanews_info()
 {
@@ -495,7 +495,7 @@ function MNS_newthread()
 			"msg" => $linklang,
 			"uid" => $mybb->user['uid'],
 			"tid" => $tid,
-			"url" => "". $settings['bburl'] ."'/'". get_thread_link($tid) ."",
+			"url" => "". $settings['bburl'] ."/". get_thread_link($tid) ."",
 			"avatar" => $avtar_link,
 			"newslimit" => $mybb->settings['miunanews_num_news'],
 			"type" => "newthread"
@@ -536,7 +536,7 @@ function MNS_newpost()
 			"msg" => $linklang,
 			"uid" => $mybb->user['uid'],
 			"tid" => $tid,
-			"url" => "". $settings['bburl'] ."'/'". $MNS_url ."",
+			"url" => "". $settings['bburl'] ."/". $MNS_url ."",
 			"avatar" => $avtar_link,
 			"newslimit" => $mybb->settings['miunanews_num_news'],
 			"type" => "newpost"
