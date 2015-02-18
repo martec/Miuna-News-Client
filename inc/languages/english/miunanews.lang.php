@@ -24,4 +24,9 @@ $l['miunanews_new_myalerts'] = 'New Myalerts';
 $l['miunanews_new_msg'] = 'There are new message from ';
 $l['miunanews_new_msg2'] = ' in this thread.';
 $l['miunanews_new_myalerts_msg'] = 'You have new alert by myalerts.';
+$l['miunanews_has_more'] = 'There are more posts to display. ';
+$l['miunanews_has_more2'] = 'View them?';
+$l['miunanews_spoiler'] = 'Spoiler';
+$l['miunanews_show'] = 'Show';
+$l['miunanews_hide'] = 'Hide';
 ?>

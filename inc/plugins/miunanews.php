@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '1.0.3');
+define('MNS_PLUGIN_VER', '2.0.0');
 
 function miunanews_info()
 {
@@ -93,7 +93,7 @@ function miunanews_install()
 		'name' => 'miunanews_num_news',
 		'title' => $lang->miunanews_newslimit_title,
 		'description' => $lang->miunanews_newslimit_desc,
-		'optionscode' => 'text',
+		'optionscode' => 'numeric',
 		'value' => '10',
 		'disporder' => 2,
 		'gid'		=> $groupid
@@ -102,7 +102,7 @@ function miunanews_install()
 		'name' => 'miunanews_num_myanews',
 		'title' => $lang->miunanews_newsmyalimit_title,
 		'description' => $lang->miunanews_newsmyalimit_desc,
-		'optionscode' => 'text',
+		'optionscode' => 'numeric',
 		'value' => '5',
 		'disporder' => 3,
 		'gid'		=> $groupid
@@ -111,7 +111,7 @@ function miunanews_install()
 		'name' => 'miunanews_grups_acc',
 		'title' => $lang->miunanews_nogrp_title,
 		'description' => $lang->miunanews_nogrp_desc,
-		'optionscode' => 'text',
+		'optionscode' => 'groupselect',
 		'value' => '7',
 		'disporder' => 4,
 		'gid'		=> $groupid
@@ -165,7 +165,7 @@ function miunanews_install()
 		'name' => 'miunanews_folder_acc',
 		'title' => $lang->miunanews_foldacc_title,
 		'description' => $lang->miunanews_foldacc_desc,
-		'optionscode' => 'text',
+		'optionscode' => 'forumselect',
 		'value' => '',
 		'disporder' => 10,
 		'gid'		=> $groupid
@@ -281,7 +281,17 @@ function miunanews_activate()
 
 	$PL->stylesheet('miunanews', file_get_contents(MYBB_ROOT . "/jscripts/miuna/news/css/miunanews.css"));
 
-	$new_template_global['miunanewstemplate'] = "<script src=\"{\$mybb->settings['miunanews_server']}/socket.io/socket.io.js\"></script>
+	$new_template_global['miunanewstemplate'] = "<li><a href=\"{\$mybb->settings['bburl']}/usercp.php?action=miunanews_config\" class=\"miunanews miunanews_popup_hook\" id=\"miunaunreadNews_menu\">{\$lang->miunanews_news}</a></li>
+<span class=\"miunanews_popup_wrapper miunanews\"><a href=\"{\$mybb->settings['bburl']}/usercp.php?action=miunanews_config\" class=\"miunaunreadNews miunanews_popup_hook\" id=\"miunaunreadNews_menu\"><span class=\"mnewscount\" style=\"display:none\"></span></a>
+	<div id=\"miunaunreadNews_menu_popup\" class=\"miunanews_popup\" style=\"display:none\">
+		<div class=\"popupTitle\">{\$lang->miunanews_recent_news}</div>
+		<ol id=\"newsarea\">
+		</ol>
+		<div class=\"popupFooter\"><div class=\"tl_r\">{\$mybb->settings['miunanews_title']}</div></div>
+	</div>
+</span>";
+
+	$new_template_global['miunanewsfootertemplate'] = "<script src=\"{\$mybb->settings['miunanews_server']}/socket.io/socket.io.js\"></script>
 <script type=\"text/javascript\">
 if (typeof io == 'undefined') {
 	document.write(unescape(\"%3Cscript src='//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.2/socket.io.min.js' type='text/javascript'%3E%3C/script%3E\"));
@@ -306,25 +316,37 @@ if (typeof io == 'undefined') {
 	mns_new_msg2_lang = '{\$lang->miunanews_new_msg2}',
 	mns_new_myalerts_lang = '{\$lang->miunanews_new_myalerts}',
 	mns_new_myalertsmsg_lang = '{\$lang->miunanews_new_myalerts_msg}',
+	mns_hasmore_lang = '{\$lang->miunanews_has_more}',
+	mns_hasmore2_lang = '{\$lang->miunanews_has_more2}',
+	mns_postb_multq_lang = '{\$lang->postbit_multiquote}',
+	mns_postb_multqbut_lang = '{\$lang->postbit_button_multiquote}',
+	mns_postb_quote_lang = '{\$lang->postbit_quote}',
+	mns_postb_quotebut_lang = '{\$lang->postbit_button_quote}',
+	mns_spo_lan = '{\$lang->miunanews_spoiler}',
+	mns_hide_lan = '{\$lang->miunanews_hide}',
+	mns_show_lan = '{\$lang->miunanews_show}',
+	mns_quote_lang = '{\$lang->quote}',
+	mns_code_lang = '{\$lang->code}',
+	mns_php_lang = '{\$lang->php_code}',
 	mns_orgtit = document.title,
+	mns_postbit = '{\$mybb->user['classicpostbit']}',
+	mns_pages = \$.trim(\$('.pagination_page').last().html()),
+	mns_page_current = \$.trim(\$('.pagination_current').last().html()),
+	mns_avt_dime = '{\$mybb->settings['postmaxavatarsize']}',
+	mns_mult_quote = '{\$mybb->settings['multiquote']}',
 	mns_tid = '{\$mybb->input['tid']}';
 // -->
 </script>
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/miuna/news/miunanews.helper.js?ver=".MNS_PLUGIN_VER."\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/miuna/news/bbcode-parser.js\"></script>
 <script type=\"text/javascript\">
+mns_smilies = {
+	{\$mns_smilies_json}
+}
 \$(document).ready(function() {
 	miunanews({\$mybb->user['uid']});
 });
-</script>
-<li><a href=\"{\$mybb->settings['bburl']}/usercp.php?action=miunanews_config\" class=\"miunanews miunanews_popup_hook\" id=\"miunaunreadNews_menu\">{\$lang->miunanews_news}</a></li>
-<span class=\"miunanews_popup_wrapper miunanews\"><a href=\"{\$mybb->settings['bburl']}/usercp.php?action=miunanews_config\" class=\"miunaunreadNews miunanews_popup_hook\" id=\"miunaunreadNews_menu\"><span class=\"mnewscount\" style=\"display:none\"></span></a>
-	<div id=\"miunaunreadNews_menu_popup\" class=\"miunanews_popup\" style=\"display:none\">
-		<div class=\"popupTitle\">{\$lang->miunanews_recent_news}</div>
-		<ol id=\"newsarea\">
-		</ol>
-		<div class=\"popupFooter\"><div class=\"tl_r\">{\$mybb->settings['miunanews_title']}</div></div>
-	</div>
-</span>";
+</script>";
 
 	foreach($new_template_global as $title => $template)
 	{
@@ -333,6 +355,7 @@ if (typeof io == 'undefined') {
 	}
 
 	find_replace_templatesets("header_welcomeblock_member", '#{\$modcplink}#', "{\$modcplink}{\$miunanews}");
+	find_replace_templatesets("footer", '#<debugstuff>#', "{\$miunanewsfooter}<debugstuff>");
 
 	if($plugins_cache['active']['myalerts']) {
 		$result = $PL->edit_core("miunanews", "inc/plugins/MyAlerts/Alerts.class.php", array (
@@ -399,43 +422,74 @@ function miunanews_deactivate()
 
 	$PL->stylesheet_deactivate('miunanews', true);
 
-	$db->delete_query("templates", "title IN('miunanewstemplate')");
+	$db->delete_query("templates", "title IN('miunanewstemplate','miunanewsfootertemplate')");
 
 	find_replace_templatesets("header_welcomeblock_member", '#'.preg_quote('{$miunanews}').'#', '',0);
+	find_replace_templatesets("footer", '#'.preg_quote('{$miunanewsfooter}').'#', '',0);
 
 	$PL->edit_core("miunanews", "inc/plugins/MyAlerts/Alerts.class.php", array(), true);
 }
 
 global $settings;
 if ($settings['miunanews_online']) {
-	$plugins->add_hook('global_start', 'miunanews_cache_template');
-}
-function miunanews_cache_template()
-{
-	global $templatelist, $mybb;
-
-	if (isset($templatelist)) {
-		$templatelist .= ',';
-	}
-
-	if (THIS_SCRIPT == 'index.php') {
-		$templatelist .= 'miunanewstemplate';
-	}
-}
-
-if ($settings['miunanews_online']) {
 	$plugins->add_hook('global_start', 'MiunaNews');
 }
 function MiunaNews() {
 
-	global $settings, $mybb, $theme, $templates, $miunanews, $lang;
+	global $templatelist, $settings, $mybb, $theme, $smiliecache, $cache, $mns_smilies_json, $templates, $miunanews, $miunanewsfooter, $lang;
 
 	if (!$lang->miunanews) {
 		$lang->load('miunanews');
 	}
 
+	if (isset($templatelist)) {
+		$templatelist .= ',';
+	}
+
+	$templatelist .= 'miunanewstemplate,miunanewsfooter';
+
+	if(!$smiliecache)
+	{
+		if(!is_array($smilie_cache))
+		{
+			$smilie_cache = $cache->read("smilies");
+		}
+		foreach($smilie_cache as $smilie)
+		{
+			if($smilie['showclickable'] != 0)
+			{
+				$smilie['image'] = str_replace("{theme}", $theme['imgdir'], $smilie['image']);
+				$smiliecache[$smilie['sid']] = $smilie;
+			}
+		}
+	}
+
+	unset($smilie);
+
+	if(is_array($smiliecache))
+	{
+		reset($smiliecache);
+
+		$mns_smilies_json = "";
+
+		foreach($smiliecache as $smilie)
+		{
+			$finds = explode("\n", $smilie['find']);
+
+			// Only show the first text to replace in the box
+			$smilie['find'] = $finds[0];
+
+			$find = htmlspecialchars_uni($smilie['find']);
+			$image = htmlspecialchars_uni($smilie['image']);
+			$findfirstquote = preg_quote($find);
+			$findsecoundquote = preg_quote($findfirstquote);
+			$mns_smilies_json .= '"'.$findsecoundquote.'": "<img src=\"'.$mybb->asset_url.'/'.$image.'\" />",';
+		}
+	}
+
 	if(!in_array((int)$mybb->user['usergroup'],explode(',',$mybb->settings['miunanews_grups_acc'])) && $mybb->user['uid']!=0) {
 		eval("\$miunanews = \"".$templates->get("miunanewstemplate")."\";");
+		eval("\$miunanewsfooter = \"".$templates->get("miunanewsfootertemplate")."\";");
 	}
 
 }
@@ -486,7 +540,7 @@ function MNS_newthread()
 		}
 		$name = format_name($mybb->user['username'], $mybb->user['usergroup'], $mybb->user['displaygroup']);
 		$name_link = build_profile_link($name,$mybb->user['uid']);
-		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' style='max-height: 40px; max-width: 40px;' />",$mybb->user['uid']);
+		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' />",$mybb->user['uid']);
 		$link = '[url=' . $settings['bburl'] . '/' . get_thread_link($tid) . ']' . $mybb->input['subject'] . '[/url]';
 		$linklang = $lang->sprintf($lang->miunanews_newthread_lang, $link);
 
@@ -516,9 +570,9 @@ if ($settings['miunanews_online'] && $settings['miunanews_newpost']) {
 }
 function MNS_newpost()
 {
-	global $mybb, $tid, $settings, $lang, $url, $thread, $forum;
+	global $mybb, $tid, $settings, $lang, $url, $thread, $forum, $pid, $visible, $post;
 
-	if(!in_array((int)$forum['fid'],explode(',',$mybb->settings['miunanews_folder_acc']))) {
+	if(!in_array((int)$forum['fid'],explode(',',$mybb->settings['miunanews_folder_acc'])) && $visible==1) {
 		$lang->load('admin/config_miunanews');
 
 		if(empty($mybb->user['avatar'])) {
@@ -526,7 +580,7 @@ function MNS_newpost()
 		}
 		$name = format_name($mybb->user['username'], $mybb->user['usergroup'], $mybb->user['displaygroup']);
 		$name_link = build_profile_link($name,$mybb->user['uid']);
-		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' style='max-height: 40px; max-width: 40px;' />",$mybb->user['uid']);
+		$avtar_link = build_profile_link("<img src='".$mybb->user['avatar']."' />",$mybb->user['uid']);
 		$MNS_url = htmlspecialchars_decode($url);
 		$link = '[url=' . $settings['bburl'] . '/' . $MNS_url . ']' . $thread['subject'] . '[/url]';
 		$linklang = $lang->sprintf($lang->miunanews_newpost_lang, $link);
@@ -534,6 +588,8 @@ function MNS_newpost()
 		$data = array(
 			"nick" => $name_link,
 			"msg" => $linklang,
+			"post" => htmlspecialchars_uni($post['message']),
+			"pid" => $pid,
 			"uid" => $mybb->user['uid'],
 			"tid" => $tid,
 			"url" => "". $settings['bburl'] ."/". $MNS_url ."",

@@ -18,7 +18,7 @@
 	font-family: tahoma, sans-serif;
 	font-size: 11px;
 }
-  
+
 .miunanews_popup ol {
 	background:#efefef !important;
 	list-style: none;
@@ -111,8 +111,34 @@
 	padding: 1px;
 	border: 1px solid #D5D5D5;
 	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+	max-width: 40px;
+	max-height: 40px;
 }
 
 .tvatar img:hover {
 	border-color: #7D7D7D;
+}
+
+#mns_hasmore {
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid #CCC;
+	border-radius: 5px;
+	font-size: 11px;
+	overflow: hidden;
+	background: #F5F5F5;
+	color: #777!important;
+	text-decoration: none;
+}
+
+#mns_hasmore a:link,
+#mns_hasmore a:visited,
+#mns_hasmore a:active {
+	color: #777!important;
+	text-decoration: none;
+}
+
+#mns_hasmore a:hover {
+	color: #777!important;
+	text-decoration: underline;
 }
