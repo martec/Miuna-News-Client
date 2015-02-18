@@ -17,7 +17,6 @@
 
 $l['miunanews_news'] = 'News';
 $l['miunanews_recent_news'] = 'Recent News';
-$l['miunanews_news_settings'] = 'News Settings';
 $l['miunanews_new_post'] = 'New Post';
 $l['miunanews_new_thread'] = 'New Thread';
 $l['miunanews_new_myalerts'] = 'New Myalerts';

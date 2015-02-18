@@ -479,7 +479,7 @@ function newsgenerator(message,username,avatar,url,date,type,typenewold) {
 	if(typenewold=="new") {
 		typeoldnew = 'miunaunreadNew';
 	}
-	$("#newsarea").prepend("<li class='"+typeoldnew+" mnews'><table style='width: 100%;'><tbody><tr><td class='tvatar tl_c' width='45'>"+avatar+"</td><td><div class='miunanewsContent'><span style='font-size:12px;'><span style='color:"+color+";'>•</span> "+mnewslang+":</span> <span style='float:right;'><a href="+url+"><img src='"+rootpath+"/images/jump.png' /></a></span><br>"+username+" "+message+". ("+hour+")</div></td></tr></tbody></table></li>");
+	$("#newsarea").prepend("<li class='"+typeoldnew+" mnews'><table style='width: 100%;'><tbody><tr><td class='mns_tvatar tl_c' width='45'>"+avatar+"</td><td><div class='miunanewsContent'><span style='font-size:12px;'><span style='color:"+color+";'>•</span> "+mnewslang+":</span> <span style='float:right;'><a href="+url+"><img src='"+rootpath+"/images/jump.png' /></a></span><br>"+username+" "+message+". ("+hour+")</div></td></tr></tbody></table></li>");
 }
 
 function newsmyalertsgenerator(date,type) {
