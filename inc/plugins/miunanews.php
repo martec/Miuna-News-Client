@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '2.0.0');
+define('MNS_PLUGIN_VER', '2.0.1');
 
 function miunanews_info()
 {
@@ -326,12 +326,13 @@ if (typeof io == 'undefined') {
 	mns_hide_lan = '{\$lang->miunanews_hide}',
 	mns_show_lan = '{\$lang->miunanews_show}',
 	mns_quote_lang = '{\$lang->quote}',
+	mns_wrote_lang = '{\$lang->wrote}',
 	mns_code_lang = '{\$lang->code}',
 	mns_php_lang = '{\$lang->php_code}',
 	mns_orgtit = document.title,
 	mns_postbit = '{\$mybb->user['classicpostbit']}',
-	mns_pages = \$.trim(\$('.pagination_page').last().html()),
-	mns_page_current = \$.trim(\$('.pagination_current').last().html()),
+	mns_pages = \$.trim(\$('.pagination').not('#breadcrumb_multipage_popup').children('.pagination_page').last().html()),
+	mns_page_current = \$.trim(\$('.pagination').not('#breadcrumb_multipage_popup').children('.pagination_current').last().html()),
 	mns_avt_dime = '{\$mybb->settings['postmaxavatarsize']}',
 	mns_mult_quote = '{\$mybb->settings['multiquote']}',
 	mns_tid = '{\$mybb->input['tid']}';

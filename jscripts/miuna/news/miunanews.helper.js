@@ -134,7 +134,12 @@ var parserTags = {
 	},
 	'quote': {
 		openTag: function(params,content) {
-			return '<blockquote><cite>'+mns_quote_lang+'</cite>';
+			if(params){
+				return '<blockquote><cite>'+params+mns_wrote_lang+'</cite>';
+			}
+			else {
+				return '<blockquote><cite>'+mns_quote_lang+'</cite>';
+			}
 		},
 		closeTag: function(params,content) {
 			return '</blockquote>';
@@ -399,53 +404,68 @@ function regexmiunanews(message) {
 }
 
 function regexmiunanewspost(message) {
+
+	for (var val in mns_smilies) {
+		message = message.replace(new RegExp(''+val+'(?!\\S)', "gi"), mns_smilies[val]);
+	}
+
 	format_search_before =	 [
 		/\[\/quote\](\r?\n|\r)/ig,
 		/\[\/code\](\r?\n|\r)/ig,
 		/\[\/php\](\r?\n|\r)/ig,
 		/\[\/spoiler\](\r?\n|\r)/ig,
-		/\[\/list\](\r?\n|\r)/ig
+		/\[\/list\](\r?\n|\r)/ig,
+		/\[quote=['"](.*?)["'](.*?)\]/ig,
+		/\[quote=['"](.*?)["']\]/ig,
+		/\[\*\]/ig
 	],
 	// The matching array of strings to replace matches with
 	format_replace_before = [
 		'[/quote]',
 		'[/code]',
 		'[/php]',
-		'[/list]'
+		'[/spoiler]',
+		'[/list]',
+		'[quote=$1]',
+		'[quote=$1]',
+		'\n[*]'
 	];
 	// Perform the actual conversion
 	for (var i =0;i<format_search_before.length;i++) {
 		message = message.replace(format_search_before[i], format_replace_before[i]);
 	}
+
 	message = BBCodeParser.process(message);
+
 	format_search_after =	 [
 		/\[hr\]/ig,
 		/\[\*\]([^\n]+)/ig,
-		/\<\/li>(\r?\n|\r)/ig,
-		/\n/ig
+		/\<\/li>(\r?\n*|\r)/ig,
+		/\n/ig,
+		/(^|[^"=\]])(https?:\/\/[a-zA-Z0-9\.\-\_\-\/]+(?:\?[a-zA-Z0-9=\+\_\;\-\&]+)?(?:#[\w]+)?)/gim,
+		/(^|[^"=\]\>\/])(www\.[\S]+(\b|$))/gim,
+		/(^|[^"=\]])(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim
 	],
 	// The matching array of strings to replace matches with
 	format_replace_after = [
 		'<hr></hr>',
 		'<li>$1</li>',
 		'</li>',
-		'<br />'
+		'<br />',
+		'$1<a href="$2" target="_blank">$2</a>',
+		'$1<a href="http://$2" target="_blank">$2</a>',
+		'<a href="mailto:$1">$1</a>'
 	];
 	// Perform the actual conversion
 	for (var i =0;i<format_search_after.length;i++) {
 		message = message.replace(format_search_after[i], format_replace_after[i]);
 	}
 
-	for (var val in mns_smilies) {
-		message = message.replace(new RegExp(''+val+'(?!\\S)', "gi"), mns_smilies[val]);
-	}
-
 	return message;
 }
 
 function postbitgenerator(username,text,pid,tid,avatar,date) {
-	text_sanitize = mns_escapeHtml(text);
-	message = regexmiunanewspost(text_sanitize);
+	message = regexmiunanewspost(text);
 	hour = moment(date).utcOffset(parseInt(mns_zone)).format(mns_date_format);
 	mns_mult_quote_but = '';
 	if (parseInt(mns_mult_quote)==1) {
@@ -504,16 +524,4 @@ function openmiunanews(el, el2, type) {
 	$(".mnewscount").text(newscont).hide();
 	document.title = mns_orgtit;
 	return false;
-}
-
-function mns_escapeHtml(text) {
-  var map = {
-	'&': '&amp;',
-	'<': '&lt;',
-	'>': '&gt;',
-	'"': '&quot;',
-	"'": '&#039;'
-  };
-
-  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
