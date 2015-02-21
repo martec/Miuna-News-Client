@@ -211,12 +211,7 @@ var parserTags = {
 			if (!params) {
 				myUrl = content.replace(/<.*?>/g,"");
 			} else {
-				myUrl = params.substr(1);
-			}
-
-			BBCodeParser.urlPattern.lastIndex = 0;
-			if ( !BBCodeParser.urlPattern.test( myUrl ) ) {
-				myUrl = "#";
+				myUrl = params;
 			}
 
 			return '<a href="' + myUrl + '">';
@@ -417,6 +412,7 @@ function regexmiunanewspost(message) {
 		/\[\/list\](\r?\n|\r)/ig,
 		/\[quote=['"](.*?)["'](.*?)\]/ig,
 		/\[quote=['"](.*?)["']\]/ig,
+		/\[spoiler=(.*?)\]/ig,
 		/\[\*\]/ig
 	],
 	// The matching array of strings to replace matches with
@@ -428,6 +424,7 @@ function regexmiunanewspost(message) {
 		'[/list]',
 		'[quote=$1]',
 		'[quote=$1]',
+		'[spoiler]',
 		'\n[*]'
 	];
 	// Perform the actual conversion
@@ -440,6 +437,8 @@ function regexmiunanewspost(message) {
 	format_search_after =	 [
 		/\[hr\]/ig,
 		/\[\*\]([^\n]+)/ig,
+		/\<ol type="1">(\r?\n*|\r)/ig,
+		/\<ul>(\r?\n*|\r)/ig,
 		/\<\/li>(\r?\n*|\r)/ig,
 		/\n/ig,
 		/(^|[^"=\]])(https?:\/\/[a-zA-Z0-9\.\-\_\-\/]+(?:\?[a-zA-Z0-9=\+\_\;\-\&]+)?(?:#[\w]+)?)/gim,
@@ -450,6 +449,8 @@ function regexmiunanewspost(message) {
 	format_replace_after = [
 		'<hr></hr>',
 		'<li>$1</li>',
+		'<ol type="1">',
+		'<ul>',
 		'</li>',
 		'<br />',
 		'$1<a href="$2" target="_blank">$2</a>',

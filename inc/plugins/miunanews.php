@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '2.0.1');
+define('MNS_PLUGIN_VER', '2.0.2');
 
 function miunanews_info()
 {
@@ -339,7 +339,7 @@ if (typeof io == 'undefined') {
 // -->
 </script>
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/miuna/news/miunanews.helper.js?ver=".MNS_PLUGIN_VER."\"></script>
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/miuna/news/bbcode-parser.js\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/miuna/news/bbcode-parser.js?ver=".MNS_PLUGIN_VER."\"></script>
 <script type=\"text/javascript\">
 mns_smilies = {
 	{\$mns_smilies_json}
