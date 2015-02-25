@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '2.0.2');
+define('MNS_PLUGIN_VER', '2.5.0');
 
 function miunanews_info()
 {
@@ -287,7 +287,7 @@ function miunanews_activate()
 		<div class=\"popupTitle\">{\$lang->miunanews_recent_news}</div>
 		<ol id=\"newsarea\">
 		</ol>
-		<div class=\"popupFooter\"><div class=\"tl_r\">{\$mybb->settings['miunanews_title']}</div></div>
+		<div class=\"popupFooter\"><div class=\"tl_r\"><a href=\"#\" id=\"mns_opt\">{\$lang->miunanews_settings}</a></div></div>
 	</div>
 </span>";
 
@@ -310,6 +310,7 @@ if (typeof io == 'undefined') {
 	mns_newthread_color = '{\$mybb->settings['miunanews_newthread_color']}',
 	mns_myalerts_color = '{\$mybb->settings['miunanews_myalerts_color']}',
 	mns_myalerts = '{\$mybb->settings['miunanews_myalerts']}',
+	mns_newpost = '{\$mybb->settings['miunanews_newpost']}',
 	mns_newpost_lang = '{\$lang->miunanews_new_post}',
 	mns_newthread_lang = '{\$lang->miunanews_new_thread}',
 	mns_new_msg_lang = '{\$lang->miunanews_new_msg}',
@@ -318,6 +319,14 @@ if (typeof io == 'undefined') {
 	mns_new_myalertsmsg_lang = '{\$lang->miunanews_new_myalerts_msg}',
 	mns_hasmore_lang = '{\$lang->miunanews_has_more}',
 	mns_hasmore2_lang = '{\$lang->miunanews_has_more2}',
+	mns_sett_lang = '{\$lang->miunanews_settings}',
+	mns_loldnews_lang = '{\$lang->miunanews_old_news}',
+	mns_lnewnews_lang = '{\$lang->miunanews_new_news}',
+	mns_lmyalertsnews_lang = '{\$lang->miunanews_myalerts_news}',
+	mns_lnewpost_lang = '{\$lang->miunanews_load_newpost}',
+	mns_idign_lang = '{\$lang->miunanews_tidign_newpost}',
+	mns_updset_lang = '{\$lang->miunanews_update_config}',
+	mns_updsaved_lang = '{\$lang->miunanews_update_saved}',
 	mns_postb_multq_lang = '{\$lang->postbit_multiquote}',
 	mns_postb_multqbut_lang = '{\$lang->postbit_button_multiquote}',
 	mns_postb_quote_lang = '{\$lang->postbit_quote}',
@@ -325,6 +334,8 @@ if (typeof io == 'undefined') {
 	mns_spo_lan = '{\$lang->miunanews_spoiler}',
 	mns_hide_lan = '{\$lang->miunanews_hide}',
 	mns_show_lan = '{\$lang->miunanews_show}',
+	mns_no_lan = '{\$lang->miunanews_no}',
+	mns_yes_lan = '{\$lang->miunanews_yes}',
 	mns_quote_lang = '{\$lang->quote}',
 	mns_wrote_lang = '{\$lang->wrote}',
 	mns_code_lang = '{\$lang->code}',

@@ -28,4 +28,14 @@ $l['miunanews_has_more2'] = 'View them?';
 $l['miunanews_spoiler'] = 'Spoiler';
 $l['miunanews_show'] = 'Show';
 $l['miunanews_hide'] = 'Hide';
+$l['miunanews_settings'] = 'News Settings';
+$l['miunanews_old_news'] = 'Load old News?';
+$l['miunanews_new_news'] = 'Load new News?';
+$l['miunanews_myalerts_news'] = 'Load Myalerts News?';
+$l['miunanews_load_newpost'] = 'Load new post';
+$l['miunanews_tidign_newpost'] = 'Set thread id to ignore.<br /><small>Separate id with comma.</small>';
+$l['miunanews_no'] = 'No';
+$l['miunanews_yes'] = 'Yes';
+$l['miunanews_update_config'] = 'Update News Settings';
+$l['miunanews_update_saved'] = 'Settings of news saved.';
 ?>

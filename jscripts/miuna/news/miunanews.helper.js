@@ -292,18 +292,104 @@ var parserTags = {
  * @credits some part of code based in MyAlerts of Euan T (http://community.mybb.com/thread-127444.html)
  */
 
-var newscont = 0;
 mns_avt_dime_spli = mns_avt_dime.split("x");
-var mns_avt_width = mns_avt_dime_spli[0];
-var mns_avt_height = mns_avt_dime_spli[1];
+var newscont = 0,
+mns_avt_width = mns_avt_dime_spli[0],
+mns_avt_height = mns_avt_dime_spli[1];
 
 function miunanews(mybbuid) {
 
-	var timenews;
+	var timenews,
+	mn_set_old = '1',
+	mn_set_new = '1',
+	mn_set_mya = '1',
+	mn_set_post = '1',
+	mn_set_id = '',
+	mn_set_ls = JSON.parse(localStorage.getItem('mn_set'));
 
 	if (mns_zone_crrect=='1') {
 		mns_zone++;
 	}
+
+	if (mn_set_ls) {
+		mn_set_old = mn_set_ls['old'];
+		mn_set_new = mn_set_ls['new'];
+		if (mn_set_ls['mya']!=undefined) {
+			mn_set_mya = mn_set_ls['mya'];
+		}
+		if (mn_set_ls['pos']!=undefined) {
+			mn_set_post = mn_set_ls['pos'];
+		}
+		if (mn_set_ls['id']!=undefined) {
+			mn_set_id = mn_set_ls['id'];
+		}
+	}
+
+	($.fn.on || $.fn.live).call($(document), 'click', '#mns_opt', function (e) {
+		e.preventDefault();
+		$(".miunanews_popup").hide();
+		mns_myal_sett = mns_npost_sett = '';
+		if(parseInt(mns_myalerts)) {
+			mns_myal_sett = '<tr><td class="trow1" width="40%"><strong>'+mns_lmyalertsnews_lang+'</strong></td><td class="trow1" width="60%"><select id="mns_new_lmyal"><option value="1">'+mns_yes_lan+'</option><option value="0">'+mns_no_lan+'</option></select></td></tr>';
+		}
+		if(parseInt(mns_newpost)) {
+			mns_npost_sett = '<tr><td class="trow1" width="40%"><strong>'+mns_lnewpost_lang+'</strong></td><td class="trow1" width="60%"><select id="mns_new_lpost"><option value="1">'+mns_yes_lan+'</option><option value="0">'+mns_no_lan+'</option></select></td></tr><tr><td class="trow1" width="40%"><strong>'+mns_idign_lang+'</strong></td><td class="trow1" width="60%"><input type="text" name="tid_ig_inp" id="tid_ig_inp" autocomplete="off"></td></tr>';
+		}
+		$('body').append( '<div id="mns_conf"><table border="0" cellspacing="0" cellpadding="5" class="tborder"><tr><td class="thead" colspan="2"><strong>'+mns_sett_lang+'</strong></td></tr><tr><td class="trow1" width="40%"><strong>'+mns_loldnews_lang+'</strong></td><td class="trow1" width="60%"><select id="mns_old_lnews"><option value="1">'+mns_yes_lan+'</option><option value="0">'+mns_no_lan+'</option></select></td></tr><tr><td class="trow1" width="40%"><strong>'+mns_lnewnews_lang+'</strong></td><td class="trow1" width="60%"><select id="mns_new_lnews"><option value="1">'+mns_yes_lan+'</option><option value="0">'+mns_no_lan+'</option></select></td></tr>'+mns_myal_sett+mns_npost_sett+'</table><br /><div align="center"><button id="mns_update">'+mns_updset_lang+'</button></div><br /></div>' );
+		if (mn_set_ls) {
+			$("#mns_old_lnews").find("option[value=" + mn_set_old +"]").attr('selected', true);
+			$("#mns_new_lnews").find("option[value=" + mn_set_new +"]").attr('selected', true);
+			if (mn_set_ls['mya']!=undefined) {
+				$("#mns_new_lmyal").find("option[value=" + mn_set_mya +"]").attr('selected', true);
+			}
+			if (mn_set_ls['pos']!=undefined) {
+				$("#mns_new_lpost").find("option[value=" + mn_set_post +"]").attr('selected', true);
+			}
+			if (mn_set_ls['id']!=undefined) {
+				$("#tid_ig_inp").val(""+ mn_set_id +"");
+			}
+		}
+		$('#mns_conf').modal({ zIndex: 7 });
+	});	
+
+	($.fn.on || $.fn.live).call($(document), 'click', '#mns_update', function (e) {
+		e.preventDefault();
+		var mn_set_ls = JSON.parse(localStorage.getItem('mn_set'));
+		if (!mn_set_ls) {
+			mn_set_ls = {};
+		}
+		mn_set_ls['old'] = $("#mns_old_lnews option:selected").val();
+		mn_set_ls['new'] = $("#mns_new_lnews option:selected").val();
+		if($('#mns_new_lmyal').length) {
+			mn_set_ls['mya'] = $("#mns_new_lmyal option:selected").val();
+		}
+		if($('#mns_new_lpost').length) {
+			mn_set_ls['pos'] = $("#mns_new_lpost option:selected").val();
+			mn_set_ls['id'] = $("#tid_ig_inp").val();
+		}
+		localStorage.setItem('mn_set', JSON.stringify(mn_set_ls));
+
+		if(!$('#upd_news').length) {
+			$('<div/>', { id: 'upd_news', class: 'bottom-right' }).appendTo('body');
+		}
+		setTimeout(function() {
+			$('#upd_news').jGrowl(''+mns_updsaved_lang+'', { life: 500 });
+		},200);
+		if (mn_set_ls) {
+			mn_set_old = mn_set_ls['old'];
+			mn_set_new = mn_set_ls['new'];
+			if (mn_set_ls['mya']!=undefined) {
+				mn_set_mya = mn_set_ls['mya'];
+			}
+			if (mn_set_ls['pos']!=undefined) {
+				mn_set_post = mn_set_ls['pos'];
+			}
+			if (mn_set_ls['id']!=undefined) {
+				mn_set_id = mn_set_ls['id'];
+			}
+		}
+		$.modal.close();
+	});
 
 	$('.miunanews_popup_hook').on({
 		mouseenter: function () {
@@ -325,10 +411,6 @@ function miunanews(mybbuid) {
 		}
 	});
 
-	$('.miunanews_popup *').on('click', function(event) {
-		event.stopPropagation();
-	});
-
 	$(document).mouseup(function (e) {
 		var containermnews = $(".miunanews_popup:visible, .miunanews_popup_hook");
 		if (!containermnews.is(e.target) && containermnews.has(e.target).length === 0) {
@@ -336,25 +418,29 @@ function miunanews(mybbuid) {
 		}
 	});
 
-	mns_socket.emit('getoldnews', {newlm:mns_news_limit, uid:mybbuid});
-	mns_socket.once('loadoldnews', function(docs){
-		for (var i = docs.length-1; i >= 0; i--) {
-			if (docs[i].uid!=mybbuid) {
-				newsgenerator(docs[i].msg, docs[i].nick, docs[i].avatar, docs[i].url, docs[i].created, docs[i].type, 'old');
+	if (parseInt(mn_set_old)) {
+		mns_socket.emit('getoldnews', {newlm:mns_news_limit, uid:mybbuid});
+		mns_socket.once('loadoldnews', function(docs){
+			for (var i = docs.length-1; i >= 0; i--) {
+				if (docs[i].uid!=mybbuid) {
+					newsgenerator(docs[i].msg, docs[i].nick, docs[i].avatar, docs[i].url, docs[i].created, docs[i].type, 'old');
+				}
 			}
-		}
-	});
+		});
+	}
 
-	mns_socket.on('msgnews', function(data){
-		if (data.uid!=mybbuid) {
-			newsgenerator(data.msg, data.nick, data.avatar, data.url, data.created, data.type, 'new');
-			newscont++;
-			$(".mnewscount").text(newscont).show();
-			document.title = '['+newscont+'] '+mns_orgtit+'';
-		}
-	});
+	if (parseInt(mn_set_new)) {
+		mns_socket.on('msgnews', function(data){
+			if (data.uid!=mybbuid && $.inArray(parseInt(data.tid), mn_set_id.split(',').map(function(idignore){return Number(idignore);}))==-1) {
+				newsgenerator(data.msg, data.nick, data.avatar, data.url, data.created, data.type, 'new');
+				newscont++;
+				$(".mnewscount").text(newscont).show();
+				document.title = '['+newscont+'] '+mns_orgtit+'';
+			}
+		});
+	}
 
-	if (mns_tid != '') {
+	if (mns_tid != '' && parseInt(mn_set_post) && $.inArray(parseInt(mns_tid), mn_set_id.split(',').map(function(idignorepost){return Number(idignorepost);}))==-1) {
 		mns_socket.on('newpostnews_'+mns_tid+'', function(data){
 			if (data.uid!=mybbuid) {
 				if(parseInt(mns_pages)>parseInt(mns_page_current)){
@@ -372,7 +458,7 @@ function miunanews(mybbuid) {
 		});
 	}
 
-	if(mns_myalerts) {
+	if(parseInt(mns_myalerts)) {
 		mns_socket.on('myalertsnews_'+mybbuid+'', function(data){
 			newsmyalertsgenerator(data.created, data.type);
 			newscont++;
