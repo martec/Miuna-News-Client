@@ -72,6 +72,9 @@ function miunanews_install()
 
 	$lang->load('config_miunanews');
 
+	$query	= $db->simple_select("settinggroups", "COUNT(*) as rows");
+	$dorder = $db->fetch_field($query, 'rows') + 1;
+
 	$groupid = $db->insert_query('settinggroups', array(
 		'name'		=> 'miunanews',
 		'title'		=> 'Miuna News',
@@ -458,7 +461,7 @@ function MiunaNews() {
 		$templatelist .= ',';
 	}
 
-	$templatelist .= 'miunanewstemplate,miunanewsfooter';
+	$templatelist .= 'miunanewstemplate,miunanewsfootertemplate';
 
 	if(!$smiliecache)
 	{
