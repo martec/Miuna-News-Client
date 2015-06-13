@@ -297,7 +297,7 @@ var newscont = 0,
 mns_avt_width = mns_avt_dime_spli[0],
 mns_avt_height = mns_avt_dime_spli[1];
 
-function miunanews(mybbuid) {
+function miunanews() {
 
 	var timenews,
 	mn_set_old = '1',
@@ -460,7 +460,11 @@ function miunanews(mybbuid) {
 
 	if(parseInt(mns_myalerts)) {
 		mns_socket.on('myalertsnews_'+mybbuid+'', function(data){
-			newsmyalertsgenerator(data.created, data.type);
+			type = ''+data.type+'';
+			for (var val in mns_types) {
+				type = type.replace(val, mns_types[val]);
+			}
+			newsmyalertsgenerator(data.created, type);
 			newscont++;
 			$(".mnewscount").text(newscont).show();
 			document.title = '['+newscont+'] '+mns_orgtit+'';
