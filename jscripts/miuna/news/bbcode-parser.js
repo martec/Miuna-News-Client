@@ -59,7 +59,7 @@ var BBCodeParser = (function(parserTags, parserColors) {
 	 * @returns {RegExp}
 	 */
 	function createInnermostTagRegExp(tagsArray) {
-		var openingTag = '\\[(' + tagsArray.join('|') + ')\\b(?:[ =]([\\w\\W]*?))?\\]',
+		var openingTag = '\\[(' + tagsArray.join('|') + ')\\b(?:[ =]([\\w"#\\-\\:\\/= ]*?))?\\]',
 			notContainingOpeningTag = '((?:(?=([^\\[]+))\\4|\\[(?!\\1\\b(?:[ =](?:[\\w"#\\-\\:\\/= ]*?))?\\]))*?)',
 			closingTag = '\\[\\/\\1\\]';
 			

@@ -501,7 +501,6 @@ function regexmiunanewspost(message) {
 		/\[\/spoiler\](\r?\n|\r)/ig,
 		/\[\/list\](\r?\n|\r)/ig,
 		/\[quote=['"](.*?)["'](.*?)\]/ig,
-		/\[quote=['"](.*?)["']\]/ig,
 		/\[spoiler=(.*?)\]/ig,
 		/\[\*\]/ig
 	],
@@ -512,7 +511,6 @@ function regexmiunanewspost(message) {
 		'[/php]',
 		'[/spoiler]',
 		'[/list]',
-		'[quote=$1]',
 		'[quote=$1]',
 		'[spoiler]',
 		'\n[*]'
