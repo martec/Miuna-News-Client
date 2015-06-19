@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '3.0.0');
+define('MNS_PLUGIN_VER', '3.0.2');
 
 function miunanews_info()
 {
@@ -120,21 +120,12 @@ function miunanews_install()
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
-		'name' => 'miunanews_title',
-		'title' => $lang->miunanews_news_title,
-		'description' => $lang->miunanews_news_desc,
-		'optionscode' => 'text',
-		'value' => 'Miuna News',
-		'disporder' => 5,
-		'gid'		=> $groupid
-	);
-	$miunanews_setting[] = array(
 		'name' => 'miunanews_server',
 		'title' => $lang->miunanews_server_title,
 		'description' => $lang->miunanews_server_desc,
 		'optionscode' => 'text',
 		'value' => '',
-		'disporder' => 6,
+		'disporder' => 5,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -143,7 +134,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_socketio_desc,
 		'optionscode' => 'text',
 		'value' => '',
-		'disporder' => 7,
+		'disporder' => 6,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -152,7 +143,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_serusr_desc,
 		'optionscode' => 'text',
 		'value' => '',
-		'disporder' => 8,
+		'disporder' => 7,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -161,7 +152,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_serpass_desc,
 		'optionscode' => 'text',
 		'value' => '',
-		'disporder' => 9,
+		'disporder' => 8,
 		'gid'		=> $groupid
 	);	
 	$miunanews_setting[] = array(
@@ -170,7 +161,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_newpost_desc,
 		'optionscode' => 'yesno',
 		'value' => 1,
-		'disporder' => 10,
+		'disporder' => 9,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -179,7 +170,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_newthread_desc,
 		'optionscode' => 'yesno',
 		'value' => 1,
-		'disporder' => 11,
+		'disporder' => 10,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -188,7 +179,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_foldacc_desc,
 		'optionscode' => 'forumselect',
 		'value' => '',
-		'disporder' => 12,
+		'disporder' => 11,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -197,7 +188,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_dataf_desc,
 		'optionscode' => 'text',
 		'value' => 'DD/MM hh:mm A',
-		'disporder' => 13,
+		'disporder' => 12,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -206,7 +197,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_newpostcolor_desc,
 		'optionscode' => 'text',
 		'value' => 'green',
-		'disporder' => 14,
+		'disporder' => 13,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -215,7 +206,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_newthreadcolor_desc,
 		'optionscode' => 'text',
 		'value' => 'blue',
-		'disporder' => 15,
+		'disporder' => 14,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -224,7 +215,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_myalertscolor_desc,
 		'optionscode' => 'text',
 		'value' => 'orange',
-		'disporder' => 16,
+		'disporder' => 15,
 		'gid'		=> $groupid
 	);
 	$miunanews_setting[] = array(
@@ -233,7 +224,7 @@ function miunanews_install()
 		'description' => $lang->miunanews_myalertonoff_desc,
 		'optionscode' => 'yesno',
 		'value' => 0,
-		'disporder' => 17,
+		'disporder' => 16,
 		'gid'		=> $groupid
 	);
 
@@ -260,7 +251,6 @@ function miunanews_uninstall()
 		'miunanews_num_news',
 		'miunanews_num_myanews',
 		'miunanews_grups_acc',
-		'miunanews_title',
 		'miunanews_server',
 		'miunanews_server_username',
 		'miunanews_server_password',
@@ -389,7 +379,7 @@ mns_types = {
 	}
 
 	find_replace_templatesets("header_welcomeblock_member", '#{\$modcplink}#', "{\$modcplink}{\$miunanews}");
-	find_replace_templatesets("footer", '#<debugstuff>#', "{\$miunanewsfooter}<debugstuff>");
+	find_replace_templatesets("footer", '/$/', "{\$miunanewsfooter}");
 
 	if($plugins_cache['active']['myalerts']) {
 		$result = $PL->edit_core("miunanews", "inc/plugins/MybbStuff/MyAlerts/src/Entity/Alert.php", array (
