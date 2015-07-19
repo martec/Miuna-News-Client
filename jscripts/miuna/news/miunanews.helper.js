@@ -135,7 +135,7 @@ var parserTags = {
 	'quote': {
 		openTag: function(params,content) {
 			if(params){
-				return '<blockquote><cite>'+params+mns_wrote_lang+'</cite>';
+				return '<blockquote><cite>'+params+' '+mns_wrote_lang+'</cite>';
 			}
 			else {
 				return '<blockquote><cite>'+mns_quote_lang+'</cite>';
@@ -501,6 +501,7 @@ function regexmiunanewspost(message) {
 		/\[\/spoiler\](\r?\n|\r)/ig,
 		/\[\/list\](\r?\n|\r)/ig,
 		/\[quote=['"](.*?)["'](.*?)\]/ig,
+		/\[quote=(.*?)(\.|´|"|'|`)(.*?)\]/ig,
 		/\[spoiler=(.*?)\]/ig,
 		/\[\*\]/ig
 	],
@@ -512,6 +513,7 @@ function regexmiunanewspost(message) {
 		'[/spoiler]',
 		'[/list]',
 		'[quote=$1]',
+		'[quote=$1-$3]',
 		'[spoiler]',
 		'\n[*]'
 	];

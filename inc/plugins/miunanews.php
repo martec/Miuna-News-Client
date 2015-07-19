@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '3.0.2');
+define('MNS_PLUGIN_VER', '3.0.3');
 
 function miunanews_info()
 {
