@@ -51,4 +51,6 @@ $l['miunanews_myalertscolor_title'] = 'New Myalerts Color';
 $l['miunanews_myalertscolor_desc'] = 'Set here color used by Miuna News for New Myalerts alert';
 $l['miunanews_myalertonoff_title'] = 'Myalert support';
 $l['miunanews_myalertonoff_desc'] = 'Set here if you want enable myalert support. This feature require myalert installed and myalerts.php edited.';
+$l['miunanews_usefsockopen_title'] = 'Use fsockopen instead of curl?';
+$l['miunanews_usefsockopen_desc'] = 'Set here you want active fsockopen instead of curl. If you select yes, Miuna News will use fsockopen.';
 ?>

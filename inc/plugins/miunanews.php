@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '3.1.0');
+define('MNS_PLUGIN_VER', '3.1.1');
 
 function miunanews_info()
 {
@@ -225,6 +225,15 @@ function miunanews_install()
 		'optionscode' => 'yesno',
 		'value' => 0,
 		'disporder' => 16,
+		'gid'		=> $groupid
+	);
+	$miunanews_setting[] = array(
+		'name' => 'miunanews_use_fsockopen',
+		'title' => $lang->miunanews_usefsockopen_title,
+		'description' => $lang->miunanews_usefsockopen_desc,
+		'optionscode' => 'yesno',
+		'value' => 0,
+		'disporder' => 17,
 		'gid'		=> $groupid
 	);
 
@@ -526,19 +535,47 @@ function sendPostDataMN($type, $data) {
 	if (parse_url($baseurl, PHP_URL_SCHEME)!='https') {
 		$baseurl = "https://".$settings['miunanews_server']."";
 	}
-	$emiturl = $baseurl."/".$type."";
+	if ((int)$settings['miunanews_use_fsockopen']==1) {
+		$data = json_encode($data);
+		$hosturl = parse_url($baseurl, PHP_URL_HOST);
+		$path = "/".$type."";
+		$fp = fsockopen('ssl://'. $hosturl, 443, $errno, $errstr, 30);
+		$http = "POST $path HTTP/1.1\r\n";
+		$http .= "Host: $hosturl\r\n";
+		$http .= "Content-Type: application/json\r\n";
+		$http .= "Authorization: Basic " . base64_encode(''.$settings['miunanews_server_username'].':'.$settings['miunanews_server_password'].'') . "\r\n";
+		$http .= "Content-length: " . strlen($data) . "\r\n";
+		$http .= "Connection: close\r\n\r\n";
+		$http .= $data;
+		fwrite($fp, $http);
+		$lineBreak = 0;
+		while (!feof($fp))
+		{
+			if($lineBreak == 0)
+			while(trim(fgets($fp, 2014)) != "")
+			{
+				$lineBreak = 1;
+				continue;
+			}
 
-	$opts = array('http' =>
-		array(
-			'method'  => 'POST',
-			'header'  => array('Content-Type: application/json', 'Authorization: Basic '.base64_encode("".$settings['miunanews_server_username'].":".$settings['miunanews_server_password']."").''),
-			'content' => json_encode($data)
-		)
-	);
-
-	$context  = stream_context_create($opts);
-	$result = file_get_contents($emiturl, false, $context);
-	return $result;
+			$line = fgets($fp, 1024);
+			$response .= "$line";
+		}
+		return $response;
+	}
+	else {
+		$emiturl = $baseurl."/".$type."";
+		$ch = curl_init($emiturl);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Origin: http://'.$_SERVER['HTTP_HOST'].'', 'Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		curl_setopt($ch, CURLOPT_USERPWD, "".$settings['miunanews_server_username'].":".$settings['miunanews_server_password']."");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+		$result = curl_exec($ch);
+		curl_close($ch);
+		return $result;
+	}
 }
 
 if ($settings['miunanews_online'] && $settings['miunanews_newthread']) {
