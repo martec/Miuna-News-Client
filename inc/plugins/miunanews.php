@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '3.0.3');
+define('MNS_PLUGIN_VER', '3.1.0');
 
 function miunanews_info()
 {
@@ -519,18 +519,25 @@ function MiunaNews() {
 }
 
 function sendPostDataMN($type, $data) {
+
 	global $mybb, $settings;
+
 	$baseurl = $settings['miunanews_server'];
+	if (parse_url($baseurl, PHP_URL_SCHEME)!='https') {
+		$baseurl = "https://".$settings['miunanews_server']."";
+	}
 	$emiturl = $baseurl."/".$type."";
-	$ch = curl_init($emiturl);
-	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Origin: http://'.$_SERVER['HTTP_HOST'].'', 'Content-Type: application/json'));
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-	curl_setopt($ch, CURLOPT_USERPWD, "".$settings['miunanews_server_username'].":".$settings['miunanews_server_password']."");
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-	$result = curl_exec($ch);
-	curl_close($ch);
+
+	$opts = array('http' =>
+		array(
+			'method'  => 'POST',
+			'header'  => array('Content-Type: application/json', 'Authorization: Basic '.base64_encode("".$settings['miunanews_server_username'].":".$settings['miunanews_server_password']."").''),
+			'content' => json_encode($data)
+		)
+	);
+
+	$context  = stream_context_create($opts);
+	$result = file_get_contents($emiturl, false, $context);
 	return $result;
 }
 
