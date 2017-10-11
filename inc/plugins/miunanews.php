@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '3.1.1');
+define('MNS_PLUGIN_VER', '3.2.0');
 
 function miunanews_info()
 {
@@ -227,15 +227,6 @@ function miunanews_install()
 		'disporder' => 16,
 		'gid'		=> $groupid
 	);
-	$miunanews_setting[] = array(
-		'name' => 'miunanews_use_fsockopen',
-		'title' => $lang->miunanews_usefsockopen_title,
-		'description' => $lang->miunanews_usefsockopen_desc,
-		'optionscode' => 'yesno',
-		'value' => 0,
-		'disporder' => 17,
-		'gid'		=> $groupid
-	);
 
 	$db->insert_query_multiple("settings", $miunanews_setting);
 	rebuild_settings();
@@ -313,7 +304,7 @@ function miunanews_activate()
 	</div>
 </span>";
 
-	$new_template_global['miunanewsfootertemplate'] = "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js\"></script>
+	$new_template_global['miunanewsfootertemplate'] = "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js\"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js'></script>
 <script type=\"text/javascript\">
 <!--
@@ -532,50 +523,23 @@ function sendPostDataMN($type, $data) {
 	global $mybb, $settings;
 
 	$baseurl = $settings['miunanews_server'];
+	if (parse_url($baseurl, PHP_URL_SCHEME)=='http') {
+		$baseurl = "https://".parse_url($baseurl, PHP_URL_HOST)."";
+	}
 	if (parse_url($baseurl, PHP_URL_SCHEME)!='https') {
 		$baseurl = "https://".$settings['miunanews_server']."";
 	}
-	if ((int)$settings['miunanews_use_fsockopen']==1) {
-		$data = json_encode($data);
-		$hosturl = parse_url($baseurl, PHP_URL_HOST);
-		$path = "/".$type."";
-		$fp = fsockopen('ssl://'. $hosturl, 443, $errno, $errstr, 30);
-		$http = "POST $path HTTP/1.1\r\n";
-		$http .= "Host: $hosturl\r\n";
-		$http .= "Content-Type: application/json\r\n";
-		$http .= "Authorization: Basic " . base64_encode(''.$settings['miunanews_server_username'].':'.$settings['miunanews_server_password'].'') . "\r\n";
-		$http .= "Content-length: " . strlen($data) . "\r\n";
-		$http .= "Connection: close\r\n\r\n";
-		$http .= $data;
-		fwrite($fp, $http);
-		$lineBreak = 0;
-		while (!feof($fp))
-		{
-			if($lineBreak == 0)
-			while(trim(fgets($fp, 2014)) != "")
-			{
-				$lineBreak = 1;
-				continue;
-			}
-
-			$line = fgets($fp, 1024);
-			$response .= "$line";
-		}
-		return $response;
-	}
-	else {
-		$emiturl = $baseurl."/".$type."";
-		$ch = curl_init($emiturl);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Origin: http://'.$_SERVER['HTTP_HOST'].'', 'Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		curl_setopt($ch, CURLOPT_USERPWD, "".$settings['miunanews_server_username'].":".$settings['miunanews_server_password']."");
-		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-		$result = curl_exec($ch);
-		curl_close($ch);
-		return $result;
-	}
+	$emiturl = $baseurl."/".$type."";
+	$ch = curl_init($emiturl);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Origin: http://'.$_SERVER['HTTP_HOST'].'', 'Content-Type: application/json'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+	curl_setopt($ch, CURLOPT_USERPWD, "".$settings['miunanews_server_username'].":".$settings['miunanews_server_password']."");
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+	$result = curl_exec($ch);
+	curl_close($ch);
+	return $result;
 }
 
 if ($settings['miunanews_online'] && $settings['miunanews_newthread']) {
