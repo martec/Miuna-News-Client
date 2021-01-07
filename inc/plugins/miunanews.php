@@ -26,7 +26,7 @@ if(!defined("PLUGINLIBRARY"))
 	define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-define('MNS_PLUGIN_VER', '3.2.0');
+define('MNS_PLUGIN_VER', '3.2.1');
 
 function miunanews_info()
 {
@@ -72,8 +72,8 @@ function miunanews_install()
 
 	$lang->load('config_miunanews');
 
-	$query	= $db->simple_select("settinggroups", "COUNT(*) as rows");
-	$dorder = $db->fetch_field($query, 'rows') + 1;
+	$query	= $db->simple_select("settinggroups", "COUNT(*) as counts");
+	$dorder = $db->fetch_field($query, 'counts') + 1;
 
 	$groupid = $db->insert_query('settinggroups', array(
 		'name'		=> 'miunanews',
@@ -274,10 +274,10 @@ function miunanews_is_installed()
 {
 	global $db;
 
-	$query = $db->simple_select("settinggroups", "COUNT(*) as rows", "name = 'miunanews'");
-	$rows  = $db->fetch_field($query, 'rows');
+	$query = $db->simple_select("settinggroups", "COUNT(*) as counts", "name = 'miunanews'");
+	$counts  = $db->fetch_field($query, 'counts');
 
-	return ($rows > 0);
+	return ($counts > 0);
 }
 
 function miunanews_activate()
